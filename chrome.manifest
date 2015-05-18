@@ -1,0 +1,3 @@
+content     config                content/
+locale      config en-US          locale/en-US/
+skin        config classic/1.0    skin/
