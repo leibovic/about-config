@@ -8,16 +8,15 @@ Cu.import("resource://gre/modules/Services.jsm");
 
 var PrefsList = React.createClass({
   render: function() {
-    return React.DOM.ul(
-      this.props.prefs.slice(0, 100).map(function(pref) {
-        return React.DOM.li(null, pref);
-      })
-    );
+    var prefs = this.props.prefs.map(function(pref) {
+      return <li>{ pref }</li>;
+    });
+    return <ul>{ prefs }</ul>;
   }
 });
 
-var PrefsListFactory = React.createFactory(PrefsList);
+var prefs = Services.prefs.getChildList("").sort().slice(0, 100);
 React.render(
-  PrefsListFactory({ prefs: Services.prefs.getChildList("").sort() }),
+  <PrefsList prefs={ prefs } />,
   document.body
 );
