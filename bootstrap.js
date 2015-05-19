@@ -29,7 +29,7 @@ let aboutConfig = {
     if (aURI.spec != "about:config")
       return;
 
-    let uri = Services.io.newURI("chrome://config/content/config.xhtml", null, null);
+    let uri = Services.io.newURI("chrome://config/content/config.html", null, null);
     return Services.io.newChannelFromURI(uri);
   }
 };
