@@ -1,0 +1,15 @@
+{
+  "title": "about:config",
+  "name": "about-config",
+  "version": "0.0.1",
+  "description": "A new about:config page for mobile",
+  "main": "index.js",
+  "author": "Margaret Leibovic",
+  "engines": {
+    "fennec": ">=38.0a1"
+  },
+  "license": "MPL",
+  "dependencies": {
+    "about-what": "*"
+  }
+}
