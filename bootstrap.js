@@ -36,6 +36,10 @@ let aboutConfig = {
 
 function startup(data, reason) {
   Cm.QueryInterface(Ci.nsIComponentRegistrar).registerFactory(uuid, description, contract, factory);
+
+  if (reason == ADDON_INSTALL) {
+    Services.wm.getMostRecentWindow("navigator:browser").BrowserApp.addTab("about:config");
+  }
 }
 
 function shutdown(data, reason) {

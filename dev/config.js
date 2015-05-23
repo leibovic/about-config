@@ -37,7 +37,9 @@ var Services = {
 
     setBoolPref: function(name, value) {},
     setIntPref: function(name, value) {},
-    setCharPref: function(name, value) {}
+    setCharPref: function(name, value) {},
+
+    savePrefFile: function() {}
   }
 }
 
@@ -81,6 +83,8 @@ var Pref = React.createClass({
   },
 
   setValue: function(value) {
+    this.setState({ value: value });
+
     switch (this.state.type) {
       case Services.prefs.PREF_BOOL:
         Services.prefs.setBoolPref(this.props.name, value);
@@ -94,8 +98,7 @@ var Pref = React.createClass({
     }
 
     // Ensure pref change flushed to disk immediately.
-    //Services.prefs.savePrefFile(null);
-    this.setState({ value: value });
+    Services.prefs.savePrefFile(null);
   },
 
   handleClick: function(e) {
@@ -162,8 +165,7 @@ var AboutConfig = React.createClass({
   },
 
   render: function() {
-    // XXX: For now, only render first 100 prefs
-    var prefs = this.state.prefs.slice(0, 100).map(function(pref) {
+    var prefs = this.state.prefs.slice(0, 30).map(function(pref) {
       return <Pref key={pref} name={pref} />;
     });
 
