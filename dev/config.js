@@ -21,16 +21,23 @@ var Services = {
     },
 
     getPrefType: function(name) {
-      return this.PREF_BOOL;
+      var types = [this.PREF_BOOL, this.PREF_INT, this.PREF_STRING];
+      return types[Math.floor(Math.random() * types.length)];
     },
 
     getBoolPref: function(name) {
       return Math.random() < 0.5;
     },
+    getIntPref: function(name) {
+      return Math.floor(Math.random() * 1000);
+    },
+    getCharPref: function(name) {
+      return name.toUpperCase();
+    },
 
-    setBoolPref: function(name, value) {
-
-    }
+    setBoolPref: function(name, value) {},
+    setIntPref: function(name, value) {},
+    setCharPref: function(name, value) {}
   }
 }
 
@@ -44,8 +51,21 @@ var Pref = React.createClass({
     var type = Services.prefs.getPrefType(this.props.name);
     return {
       type: type,
+      inputType: this.getInputType(type),
       value: this.getValue(type, this.props.name)
     };
+  },
+
+  getInputType: function(type) {
+    switch(type) {
+      case Services.prefs.PREF_BOOL:
+        return "button";
+      case Services.prefs.PREF_INT:
+        return "number";
+      case Services.prefs.PREF_STRING:
+      default:
+        return "text";
+    }
   },
 
   getValue: function(type) {
@@ -84,11 +104,19 @@ var Pref = React.createClass({
     }
   },
 
+  handleChange: function(e) {
+    if (e.target.value) {
+      this.setValue(e.target.value);
+    }
+  },
+
   render: function() {
     return (
       <li className="pref-item">
-        <div className="pref-name" onClick={ this.handleClick }>{ this.props.name }</div>
-        <div className="pref-item-line">{ this.state.value.toString() }</div>
+        <div className="pref-name" onClick={this.handleClick}>{this.props.name}</div>
+        <div className="pref-item-line">
+          <input className="pref-value" type={this.state.inputType} value={this.state.value} onChange={this.handleChange} onClick={this.handleClick}/>
+        </div>
       </li>
     );
   }
