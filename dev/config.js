@@ -3,17 +3,94 @@
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
 "use strict";
 
-// var allPrefs = Services.prefs.getChildList("").sort();
+// Shim ===============================
 
-var stuff = ["aa", "ab", "bb", "bbb", "foo", "bar", "baz"];
-var allPrefs = [];
-for (var i = 0; i < 1000; i++) {
-  allPrefs.push(stuff[Math.floor(Math.random() * stuff.length)] + "-" + i);
+var Services = {
+  prefs: {
+    PREF_STRING: 32,
+    PREF_INT: 64,
+    PREF_BOOL: 128,
+
+    getChildList: function() {
+      var stuff = ["aa", "ab", "bb", "bbb", "foo", "bar", "baz"];
+      var list = [];
+      for (var i = 0; i < 1000; i++) {
+        list.push(stuff[Math.floor(Math.random() * stuff.length)] + "-" + i);
+      }
+      return list;
+    },
+
+    getPrefType: function(name) {
+      return this.PREF_BOOL;
+    },
+
+    getBoolPref: function(name) {
+      return Math.random() < 0.5;
+    },
+
+    setBoolPref: function(name, value) {
+
+    }
+  }
 }
 
+// =====================================
+
+
+var allPrefs = Services.prefs.getChildList("").sort();
+
 var Pref = React.createClass({
+  getInitialState: function() {
+    var type = Services.prefs.getPrefType(this.props.name);
+    return {
+      type: type,
+      value: this.getValue(type, this.props.name)
+    };
+  },
+
+  getValue: function(type) {
+    switch (type) {
+      case Services.prefs.PREF_BOOL:
+        return Services.prefs.getBoolPref(this.props.name);
+      case Services.prefs.PREF_INT:
+        return Services.prefs.getIntPref(this.props.name);
+      case Services.prefs.PREF_STRING:
+      default:
+        return Services.prefs.getCharPref(this.props.name);
+    }
+  },
+
+  setValue: function(value) {
+    switch (this.state.type) {
+      case Services.prefs.PREF_BOOL:
+        Services.prefs.setBoolPref(this.props.name, value);
+        break;
+      case Services.prefs.PREF_INT:
+        Services.prefs.setIntPref(this.props.name, value);
+        break;
+      case Services.prefs.PREF_STRING:
+      default:
+        Services.prefs.setCharPref(this.props.name, value);
+    }
+
+    // Ensure pref change flushed to disk immediately.
+    //Services.prefs.savePrefFile(null);
+    this.setState({ value: value });
+  },
+
+  handleClick: function(e) {
+    if (this.state.type === Services.prefs.PREF_BOOL) {
+      this.setValue(!this.state.value);
+    }
+  },
+
   render: function() {
-    return <li className="pref">{this.props.pref}</li>;
+    return (
+      <li className="pref-item">
+        <div className="pref-name" onClick={ this.handleClick }>{ this.props.name }</div>
+        <div className="pref-item-line">{ this.state.value.toString() }</div>
+      </li>
+    );
   }
 });
 
@@ -41,7 +118,7 @@ var AboutConfig = React.createClass({
   filterPrefs: function(e) {
     var filterValue = e.target.value;
     if (!filterValue) {
-      return allPrefs;
+      return this.setState({prefs: allPrefs });
     }
     var filter = new RegExp(filterValue, "i");
     this.setState({
@@ -59,8 +136,9 @@ var AboutConfig = React.createClass({
   render: function() {
     // XXX: For now, only render first 100 prefs
     var prefs = this.state.prefs.slice(0, 100).map(function(pref) {
-      return <Pref key={pref} pref={pref} />;
+      return <Pref key={pref} name={pref} />;
     });
+
     return (
       <div>
         <div className="toolbar">
