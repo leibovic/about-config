@@ -87,11 +87,14 @@ var Pref = React.createClass({
 
 var AboutConfig = React.createClass({
   getInitialState: function() {
-    return { prefs: allPrefs }
+    return { prefs: allPrefs, end: 30 };
   },
 
   handleScroll: function(e) {
-    // XXX: Show more prefs if the user scrolls to the end of the lsit.
+    var prefsList = document.getElementById("prefs-list");
+    if (prefsList.scrollHeight - (window.pageYOffset + window.innerHeight) < 200) {
+      this.setState({ end: this.state.end + 30 });
+    }
   },
 
   componentDidMount: function() {
@@ -125,18 +128,18 @@ var AboutConfig = React.createClass({
   },
 
   render: function() {
-    var prefs = this.state.prefs.slice(0, 30).map(function(pref) {
+    var prefs = this.state.prefs.slice(0, this.state.end).map(function(pref) {
       return <Pref key={pref} name={pref} />;
     });
 
     return (
       <div>
-        <div className="toolbar">
+        <div id="toolbar">
           <button onClick={this.createNewPref}>New Pref</button>
           <input id="input" type="search" placeholder="Search" onInput={this.filterPrefs}/>
           <button onClick={this.clearInput}>Clear</button>
         </div>
-        <ul className="prefs-list">{prefs}</ul>
+        <ul id="prefs-list">{prefs}</ul>
       </div>
     );
   }
