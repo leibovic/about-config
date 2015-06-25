@@ -2,10 +2,10 @@
 <RDF xmlns="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:em="http://www.mozilla.org/2004/em-rdf#">
 
     <Description about="urn:mozilla:install-manifest">
-        <em:id>about.config@mozilla.org</em:id>
+        <em:id>about.config.android@mozilla.org</em:id>
         <em:type>2</em:type>
-        <em:name>about:config</em:name>
-        <em:version>0.1</em:version>
+        <em:name>about:config for Firefox for Android</em:name>
+        <em:version>1.0</em:version>
         <em:bootstrap>true</em:bootstrap>
         <em:description>about:config page for mobile</em:description>
         <em:creator>Margaret Leibovic</em:creator>
