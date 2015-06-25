@@ -16,8 +16,6 @@ const INNERHTML_VALUE_DELAY = 100;    // Delay before providing prefs innerHTML 
 let gStringBundle = Services.strings.createBundle("chrome://config/locale/config.properties");
 let gClipboardHelper = Cc["@mozilla.org/widget/clipboardhelper;1"].getService(Ci.nsIClipboardHelper);
 
-dump("**********************************************");
-
 /* ============================== NewPrefDialog ==============================
  *
  * New Preference Dialog Object and methods

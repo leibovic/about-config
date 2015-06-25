@@ -39,7 +39,7 @@ body {
     margin-right: 0.5em;
     height: 2em;
     border: 1px solid transparent;
-    border-image-source: url("chrome://browser/skin/images/textfield.png");
+    border-image-source: url("chrome://config/skin/images/textfield.png");
     border-image-slice: 1 1 3 1;
     border-image-width: 1px 1px 3px 1px;
     overflow: hidden;
@@ -74,7 +74,7 @@ body {
 
 #new-pref-toggle-button {
     background-position: center center;
-    background-image: url("chrome://browser/skin/images/config-plus.png");
+    background-image: url("chrome://config/skin/images/config-plus.png");
     background-size: 48px 48px;
     height: 48px;
     width: 48px;
@@ -83,7 +83,7 @@ body {
 }
 
 #filter-search-button {
-    background-image: url("chrome://browser/skin/images/search.png");
+    background-image: url("chrome://config/skin/images/search.png");
     background-size: 32px 32px;
     height: 32px;
     width: 32px;
@@ -92,7 +92,7 @@ body {
 }
 
 #filter-input-clear-button {
-    background-image: url("chrome://browser/skin/images/search-clear-30.png");
+    background-image: url("chrome://config/skin/images/search-clear-30.png");
     background-size: 32px 32px;
     height: 32px;
     width: 32px;
@@ -202,7 +202,7 @@ li {
 
 .pref-name[locked] {
     padding-right: 20px;
-    background-image: url("chrome://browser/skin/images/lock.png");
+    background-image: url("chrome://config/skin/images/lock.png");
     background-repeat: no-repeat;
     background-position: right 50%;
     background-size: auto 60%;
@@ -294,13 +294,13 @@ li {
 }
 
 .pref-button.up {
-    background-image: url("chrome://browser/skin/images/arrowup-16.png");
+    background-image: url("chrome://config/skin/images/arrowup-16.png");
     background-position: center center;
     background-repeat: no-repeat;
 }
 
 .pref-button.down {
-    background-image: url("chrome://browser/skin/images/arrowdown-16.png");
+    background-image: url("chrome://config/skin/images/arrowdown-16.png");
     background-position: center center;
     background-repeat: no-repeat;
 }
@@ -324,7 +324,7 @@ li {
 }
 
 #loading-container > li {
-    background-image: url(chrome://browser/skin/images/throbber.png);
+    background-image: url(chrome://config/skin/images/throbber.png);
     background-position: center center;
     background-repeat: no-repeat;
     padding-left: 40px;
