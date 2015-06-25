@@ -48,26 +48,42 @@ var Services = {
 
 var allPrefs = Services.prefs.getChildList("").sort();
 
+function getInputType(type) {
+  switch(type) {
+    case Services.prefs.PREF_BOOL:
+      return "button";
+    case Services.prefs.PREF_INT:
+      return "number";
+    case Services.prefs.PREF_STRING:
+    default:
+      return "text";
+  }
+}
+
+function setPrefValue(type, name, value) {
+  switch (type) {
+    case Services.prefs.PREF_BOOL:
+      Services.prefs.setBoolPref(name, value);
+      break;
+    case Services.prefs.PREF_INT:
+      Services.prefs.setIntPref(name, value);
+      break;
+    case Services.prefs.PREF_STRING:
+    default:
+      Services.prefs.setCharPref(name, value);
+  }
+
+  // Ensure pref change flushed to disk immediately.
+  Services.prefs.savePrefFile(null);
+}
+
 var Pref = React.createClass({
   getInitialState: function() {
     var type = Services.prefs.getPrefType(this.props.name);
     return {
       type: type,
-      inputType: this.getInputType(type),
       value: this.getValue(type, this.props.name)
     };
-  },
-
-  getInputType: function(type) {
-    switch(type) {
-      case Services.prefs.PREF_BOOL:
-        return "button";
-      case Services.prefs.PREF_INT:
-        return "number";
-      case Services.prefs.PREF_STRING:
-      default:
-        return "text";
-    }
   },
 
   getValue: function(type) {
@@ -84,21 +100,7 @@ var Pref = React.createClass({
 
   setValue: function(value) {
     this.setState({ value: value });
-
-    switch (this.state.type) {
-      case Services.prefs.PREF_BOOL:
-        Services.prefs.setBoolPref(this.props.name, value);
-        break;
-      case Services.prefs.PREF_INT:
-        Services.prefs.setIntPref(this.props.name, value);
-        break;
-      case Services.prefs.PREF_STRING:
-      default:
-        Services.prefs.setCharPref(this.props.name, value);
-    }
-
-    // Ensure pref change flushed to disk immediately.
-    Services.prefs.savePrefFile(null);
+    setPrefValue(this.state.type, this.state.name, value);
   },
 
   handleClick: function(e) {
@@ -114,13 +116,99 @@ var Pref = React.createClass({
   },
 
   render: function() {
+    var input;
+    if (this.state.type == Services.prefs.PREF_BOOL) {
+      input = (
+        <select>
+          <option value="false" selected={!this.state.value}>False</option>
+          <option value="true" selected={!this.state.value}>True</option>
+        </select>
+      );
+    } else {
+      input = <input type={this.state.inputType} value={this.state.value} onChange={this.handleChange} onClick={this.handleClick}/>;
+    }
+
     return (
       <li className="pref-item">
-        <div className="pref-name" onClick={this.handleClick}>{this.props.name}</div>
-        <div className="pref-item-line">
-          <input className="pref-value" type={this.state.inputType} value={this.state.value} onChange={this.handleChange} onClick={this.handleClick}/>
+        <div onClick={this.handleClick}>{this.props.name}</div>
+        <div>
+          <input type={this.state.inputType} value={this.state.value} onChange={this.handleChange} onClick={this.handleClick}/>
         </div>
       </li>
+    );
+  }
+});
+
+var NewPrefDialog = React.createClass({
+  getInitialState: function() {
+    return {};
+  },
+
+  getDefaultValue: function(type) {
+    return type == Services.prefs.PREF_BOOL ? false : "";
+  },
+
+  handleTypeChange: function(e) {
+    this.setState({type: parseInt(e.target.value)});
+  },
+
+  handleCancel: function() {
+    document.getElementById("new-pref-value").value = "0";
+    document.getElementById("new-pref-name").value = "";
+    document.getElementById("new-pref-value").value = "";
+    document.getElementById("new-pref-dialog").removeAttribute("visible");
+  },
+
+  handleCreate: function() {
+    var name = document.getElementById("new-pref-name").value;
+    if (!name) {
+      return;
+    }
+
+    var value = document.getElementById("new-pref-value").value;
+    setPrefValue(this.state.type, name, value);
+
+    this.handleCancel();
+  },
+
+  render: function() {
+    var nameAndType = (
+      <div>
+        <input type="text" id="new-pref-name" placeholder="Name"/>
+        <select id="new-pref-type" onChange={this.handleTypeChange}>
+          <option value="0">Type</option>
+          <option value={Services.prefs.PREF_BOOL}>Boolean</option>
+          <option value={Services.prefs.PREF_STRING}>String</option>
+          <option value={Services.prefs.PREF_INT}>Integer</option>
+        </select>
+      </div>
+    );
+
+    if (!this.state.type) {
+      return <div id="new-pref-dialog-content">{nameAndType}</div>;
+    }
+
+    var input;
+    if (this.state.type == Services.prefs.PREF_BOOL) {
+      input = (
+        <select id="new-pref-value">
+          <option value="false">False</option>
+          <option value="true">True</option>
+        </select>
+      );
+    } else {
+      input = <input id="new-pref-value" type={getInputType(this.state.type)} placeholder="Value"/>;
+    }
+
+    return (
+      <div id="new-pref-dialog-content">
+        {nameAndType}
+        <div>{input}</div>
+        <div>
+          <button onClick={this.handleCancel}>Cancel</button>
+          <button onClick={this.handleCreate}>Create</button>
+        </div>
+      </div>
     );
   }
 });
@@ -146,7 +234,7 @@ var AboutConfig = React.createClass({
   },
 
   createNewPref: function() {
-    // XXX: Show dialog to create a new pref.
+    document.getElementById("new-pref-dialog").setAttribute("visible", true);
   },
 
   filterPrefs: function(e) {
@@ -175,9 +263,12 @@ var AboutConfig = React.createClass({
     return (
       <div>
         <div id="toolbar">
-          <button onClick={this.createNewPref}>New Pref</button>
           <input id="input" type="search" placeholder="Search" onInput={this.filterPrefs}/>
           <button onClick={this.clearInput}>Clear</button>
+          <button onClick={this.createNewPref}>New Pref</button>
+        </div>
+        <div id="new-pref-dialog">
+          <NewPrefDialog/>
         </div>
         <ul id="prefs-list">{prefs}</ul>
       </div>
