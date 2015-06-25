@@ -5,7 +5,7 @@
         <em:id>about.config.android@mozilla.org</em:id>
         <em:type>2</em:type>
         <em:name>about:config for Firefox for Android</em:name>
-        <em:version>1.0</em:version>
+        <em:version>0.1</em:version>
         <em:bootstrap>true</em:bootstrap>
         <em:description>about:config page for mobile</em:description>
         <em:creator>Margaret Leibovic</em:creator>
